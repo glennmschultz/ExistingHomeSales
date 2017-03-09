@@ -7,9 +7,10 @@
   require(quantmod)
   require(splines)
   require(forecast)
+  require(ggplot2)
 
   
-  ExistingHomeSales <- read.csv("~/Existing Home Sales/EXHOSLUSM495N.txt", sep = "\t", header = TRUE)
+  ExistingHomeSales <- read.csv("~/ExistingHomeSales/EXHOSLUSM495N.txt", sep = "\t", header = TRUE)
   ExistingHomeSales$Date <- rownames(ExistingHomeSales)
 
   # Create monthly and yearly time series variables 
@@ -79,8 +80,8 @@
   layout(1)
 
   #create new data for prediction six months forward
-  NewData <- data.frame(c(12,1,2,3,4,5))   # These are months forward
-  NewData[,2] <- c(seq(215, 220,1))         # Time index     
+  NewData <- data.frame(c(2,3,4,5,6,7))   # These are months forward
+  NewData[,2] <- c(seq(218, 223,1))         # Time index     
   colnames(NewData) <- c("Month", "Time")
 
   #plot the trend and seasonal factors
@@ -100,7 +101,7 @@
   XHomeSales <-data.frame(cbind(ExistingHomeSales[,"Date"]),ExistingHomeSales[,"HomeSales"])
   colnames(XHomeSales) <- c("Date", "Sales")
 
-  TS.ExistingHomeSales <- ts(XHomeSales, start = c(1999, 1), end = c(2016, 11), frequency = 12)
+  TS.ExistingHomeSales <- ts(XHomeSales, start = c(1999, 1), end = c(2017, 01), frequency = 12)
   Seasonal <- decompose(x = TS.ExistingHomeSales[,2], type = c("multiplicative"))
   Stl.Seasonal <- stl(TS.ExistingHomeSales[,2], s.window = "periodic", s.degree = 0)
   stl.predict <- forecast(Stl.Seasonal, method = c("arima"), h = 12)
@@ -114,3 +115,22 @@
   ExistingHomeSales[,1] <- ExistingHomeSales[,1] * 1000
   write.csv(ExistingHomeSales, file = "ExistHomeSales.csv")
 
+ # Plots
+ 
+  ggplot(subset(ExistingHomeSales, Month ==1), 
+         aes(y = HomeSales/1000, x = as.Date(Date, format = "%Y-%m-%d"))) +
+    geom_bar(stat = "identity", aes(fill = as.factor(Year))) + 
+    labs(y = "Existing Home Sales (,000s)", x = "Year",
+         caption = "Source: National Assoc. Realtors") +
+    theme_minimal() +
+    theme(legend.position = "bottom",
+          legend.title = element_blank())
+  
+  autoplot(stl.predict,
+           main = "",
+           xlab = "Date",
+           ylab = "Existing Home Sales (,000s)") +
+    labs(aesthetic='custom text') +
+    theme_minimal() +
+    theme(legend.position = "bottom")
+  
