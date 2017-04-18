@@ -117,7 +117,7 @@
 
  # Plots
  
-  ggplot(subset(ExistingHomeSales, Month ==1), 
+  ggplot(subset(ExistingHomeSales, as.Date(Date) > '2012-01-01'), 
          aes(y = HomeSales/1000, x = as.Date(Date, format = "%Y-%m-%d"))) +
     geom_bar(stat = "identity", aes(fill = as.factor(Year))) + 
     labs(y = "Existing Home Sales (,000s)", x = "Year",
