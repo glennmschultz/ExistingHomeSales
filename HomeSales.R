@@ -1,6 +1,6 @@
-# ========================================
-# This program uses a GAM model to forecast existing home sales
-#========================================
+  # ========================================
+  # This program uses a GAM model to forecast existing home sales
+  #========================================
 
   require(mgcv)
   require(nlme)
@@ -9,7 +9,6 @@
   require(forecast)
   require(ggplot2)
 
-  
   ExistingHomeSales <- read.csv("~/ExistingHomeSales/EXHOSLUSM495N.txt", sep = "\t", header = TRUE)
   ExistingHomeSales$Date <- rownames(ExistingHomeSales)
 
@@ -38,10 +37,10 @@
             control = ctrl)
 
   # Residual Analysis
-  layout(matrix(1:2, ncol = 2))
-  acf(resid(XHS$lme), lag.max = 11, main = "ACF")
-  pacf(resid(XHS$lme), lag.max = 11, main = "PACF")
-  layout(1)
+  #layout(matrix(1:2, ncol = 2))
+  #acf(resid(XHS$lme), lag.max = 11, main = "ACF")
+  #pacf(resid(XHS$lme), lag.max = 11, main = "PACF")
+  #layout(1)
 
   # Fit auto correlated GAM Models 2, 3 and 6 months
   XHS.2 <- gamm(HomeSales ~ s(Month, bs = "cc") + s(Time, bs = "cr"),
@@ -68,16 +67,16 @@
   # Looks like either 2 months or 6 months auto correlation
 
   # Plot gam model
-  layout(matrix(1:2, ncol = 2))
-  plot(XHS.6$gam, scale = 0)
-  layout(1)
+  #layout(matrix(1:2, ncol = 2))
+  #plot(XHS.6$gam, scale = 0)
+  #layout(1)
 
   # Normalized Residual Analysis
-  layout(matrix(1:2, ncol = 2))
-  res <- resid(XHS.6$lme, type = "normalized")
-  acf(res, lag.max = 11, main = "ACF - AR(3)errors")
-  pacf(res, lag.max = 11, main = "PACF - AR(3) errors")
-  layout(1)
+  #layout(matrix(1:2, ncol = 2))
+  #res <- resid(XHS.6$lme, type = "normalized")
+  #acf(res, lag.max = 11, main = "ACF - AR(3)errors")
+  #pacf(res, lag.max = 11, main = "PACF - AR(3) errors")
+  #layout(1)
 
   #create new data for prediction six months forward
   NewData <- data.frame(c(2,3,4,5,6,7))   # These are months forward
@@ -86,9 +85,9 @@
 
   #plot the trend and seasonal factors
   Trend <- predict(XHS.6$gam, newdata = ExistingHomeSales, type = "terms")
-  plot(x = as.Date(ExistingHomeSales[,2]), y = Trend[,1], type = "l")
-  plot(x = as.Date(ExistingHomeSales[,2]), y = Trend[,2], type = "l",
-       main = "Trend GAMM Model")
+  #plot(x = as.Date(ExistingHomeSales[,2]), y = Trend[,1], type = "l")
+  #plot(x = as.Date(ExistingHomeSales[,2]), y = Trend[,2], type = "l",
+  #     main = "Trend GAMM Model")
 
   HomeSales.Term <- predict(XHS.6$gam, newdata = NewData, type = "terms", se.fit = TRUE)
   HomeSales <- predict(XHS.6$gam, newdata = NewData, type = "response", se.fit = TRUE)
@@ -105,11 +104,12 @@
   Seasonal <- decompose(x = TS.ExistingHomeSales[,2], type = c("multiplicative"))
   Stl.Seasonal <- stl(TS.ExistingHomeSales[,2], s.window = "periodic", s.degree = 0)
   stl.predict <- forecast(Stl.Seasonal, method = c("arima"), h = 12)
-  plot(stl.predict, 
-       main = "Seasonal Decompostion",
-       ylab = "Existing Home Sales (,000s)",
-       xlab = "Year")
-  plot(Stl.Seasonal)
+  
+  #plot(stl.predict, 
+  #     main = "Seasonal Decompostion",
+  #     ylab = "Existing Home Sales (,000s)",
+  #     xlab = "Year")
+  #plot(Stl.Seasonal)
   
   # Convert Exisiting Home Sales Data to back to raw and save
   ExistingHomeSales[,1] <- ExistingHomeSales[,1] * 1000
@@ -133,4 +133,6 @@
     labs(aesthetic='custom text') +
     theme_minimal() +
     theme(legend.position = "bottom")
+  
+  
   
