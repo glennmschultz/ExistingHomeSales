@@ -117,7 +117,7 @@
 
  # Plots
  
-  ggplot(subset(ExistingHomeSales, Month ==2), 
+  ggplot(subset(ExistingHomeSales, Month ==10), 
          aes(y = HomeSales/1000, x = as.Date(Date, format = "%Y-%m-%d"))) +
     geom_bar(stat = "identity", aes(fill = as.factor(Year))) + 
     labs(y = "Existing Home Sales (,000s)", x = "Year",
@@ -134,5 +134,15 @@
     theme_minimal() +
     theme(legend.position = "bottom")
   
+  plot(Seasonal)
   
+  autoplot(Seasonal$trend,
+           main ="",
+           xlab = 'Date',
+           ylab = "Existing Home Sales (,000s)") +
+    labs(aesthetic = 'custom text') +
+    theme_minimal() +
+    theme(legend.position = 'bottom')
+  
+plot(Seasonal)
   
